@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+struct Process {
+    int processID;
+    int burstTime;
+    int waitingTime;
+    int turnaroundTime;
+    bool completed;
+};
+
+void sortProcessesByBurstTime(struct Process processes[], int n) {
+    for (int i = 0; i < n - 1; ++i) {
+        for (int j = 0; j < n - i - 1; ++j) {
+            if (processes[j].burstTime > processes[j + 1].burstTime) {
+                struct Process temp = processes[j];
+                processes[j] = processes[j + 1];
+                processes[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    // Define the processes
+    struct Process processes[] = {
+        {0, 2, 0, 0, false},
+        {1, 4, 0, 0, false},
+        {2, 8, 0, 0, false}
+    };
+    int n = sizeof(processes) / sizeof(processes[0]);
+
+    // Sort processes by burst time (SJF)
+    sortProcessesByBurstTime(processes, n);
+
+    // Calculate waiting time and turnaround time
+    int currentTime = 0;
+    float totalWaitingTime = 0, totalTurnaroundTime = 0;
+    for (int i = 0; i < n; ++i) {
+        processes[i].waitingTime = currentTime;
+        currentTime += processes[i].burstTime;
+        processes[i].turnaroundTime = currentTime;
+        processes[i].completed = true;
+
+        totalWaitingTime += processes[i].waitingTime;
+        totalTurnaroundTime += processes[i].turnaroundTime;
+    }
+
+    float avgWaitingTime = totalWaitingTime / n;
+    float avgTurnaroundTime = totalTurnaroundTime / n;
+
+    printf("Average Waiting Time: %.2f\n", avgWaitingTime);
+    printf("Average Turnaround Time: %.2f\n", avgTurnaroundTime);
+}
