@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+int main() {
+    FILE *filePointer;
+    char data[100];
+
+    // Create a file
+    filePointer = fopen("example.txt", "w");
+
+    if (filePointer == NULL) {
+        printf("File could not be created.");
+        return -1;
+    }
+    // Read data from the user and write it to the file
+    printf("Enter data to write to the file: ");
+    fgets(data, sizeof(data), stdin);
+    fprintf(filePointer, "%s", data);
+    fclose(filePointer);
+
+    // Open the file to read data and print to console
+    filePointer = fopen("example.txt", "r");
+
+    if (filePointer == NULL) {
+        printf("File could not be opened.");
+        return -1;
+    }
+
+    printf("Content of the file:\n");
+    fgets(data, sizeof(data), filePointer);
+    printf("%s", data);
+    fclose(filePointer);
+
+}
