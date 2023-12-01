@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+int sharedMemory = 10; // Shared integer data
+sem_t semaphore; // Semaphore for synchronization
+
+void* doubleThread(void* arg) {
+    int localValue;
+    sem_wait(&semaphore); // Wait until semaphore is available
+    localValue = sharedMemory;
+    printf("Double the integer data: %d\n", localValue * 2);
+    sem_post(&semaphore); // Release semaphore
+    pthread_exit(NULL);
+}
+
+void* fiveTimesThread(void* arg) {
+    int localValue;
+    sem_wait(&semaphore); // Wait until semaphore is available
+    localValue = sharedMemory;
+    printf("Five times the integer data: %d\n", localValue * 5);
+    sem_post(&semaphore); // Release semaphore
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread1, thread2;
+
+    sem_init(&semaphore, 0, 1); // Initialize semaphore (mutex)
+
+    pthread_create(&thread1, NULL, doubleThread, NULL); // Create first thread
+    pthread_create(&thread2, NULL, fiveTimesThread, NULL); // Create second thread
+
+    pthread_join(thread1, NULL); // Wait for first thread to finish
+    pthread_join(thread2, NULL); // Wait for second thread to finish
+
+    sem_destroy(&semaphore); // Destroy semaphore
+
+    return 0;
+}
